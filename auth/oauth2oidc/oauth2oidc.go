@@ -3,11 +3,12 @@ package oauth2oidc
 import (
 	"context"
 	"fmt"
+	"os"
+
 	"github.com/coreos/go-oidc"
 	log "github.com/sirupsen/logrus"
 	"gitlab.127-0-0-1.fr/vx3r/wg-gen-web/model"
 	"golang.org/x/oauth2"
-	"os"
 )
 
 // Oauth2idc in order to implement interface, struct is required
@@ -58,6 +59,29 @@ func (o *Oauth2idc) Exchange(code string) (*oauth2.Token, error) {
 	return oauth2Token, nil
 }
 
+// validate google hosted domain if provided
+func validateDomain(claims map[string]interface{}) error {
+	// check domain restriction
+	hostedDomain := os.Getenv("OAUTH2_HOSTED_DOMAIN")
+	if len(hostedDomain) == 0 {
+		fmt.Println("No hosted domain restriction")
+		return nil
+	}
+
+	// check google hosted domain
+	if _, ok := claims["hd"]; !ok {
+		return fmt.Errorf("Invalid domain - must authenticate with %s", hostedDomain)
+	}
+
+	// verify hosted domain is allowed
+	hd := claims["hd"].(string)
+	if hd == hostedDomain {
+		return nil
+	}
+
+	return fmt.Errorf("%s is not an allowed domain", hd)
+}
+
 // UserInfo get token user
 func (o *Oauth2idc) UserInfo(oauth2Token *oauth2.Token) (*model.User, error) {
 	rawIDToken, ok := oauth2Token.Extra("id_token").(string)
@@ -79,6 +103,10 @@ func (o *Oauth2idc) UserInfo(oauth2Token *oauth2.Token) (*model.User, error) {
 	var claims map[string]interface{}
 	if err := userInfo.Claims(&claims); err != nil {
 		return nil, fmt.Errorf("failed to get id token claims: %s", err)
+	}
+
+	if err := validateDomain(claims); err != nil {
+		return nil, err
 	}
 
 	// get some infos about user

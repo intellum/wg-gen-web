@@ -1,6 +1,10 @@
 package auth
 
 import (
+	"fmt"
+	"net/http"
+	"time"
+
 	"github.com/gin-gonic/gin"
 	"github.com/patrickmn/go-cache"
 	log "github.com/sirupsen/logrus"
@@ -8,8 +12,6 @@ import (
 	"gitlab.127-0-0-1.fr/vx3r/wg-gen-web/model"
 	"gitlab.127-0-0-1.fr/vx3r/wg-gen-web/util"
 	"golang.org/x/oauth2"
-	"net/http"
-	"time"
 )
 
 // ApplyRoutes applies router to gin Router
@@ -117,6 +119,7 @@ func user(c *gin.Context) {
 			log.WithFields(log.Fields{
 				"err": err,
 			}).Error("failed to get user from oauth2 AccessToken")
+			c.String(http.StatusBadRequest, fmt.Sprintf("%s", err))
 			c.AbortWithStatus(http.StatusBadRequest)
 			return
 		}
