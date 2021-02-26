@@ -19,7 +19,7 @@ Simple Web based configuration generator for [WireGuard](https://wireguard.com).
 
 All WireGuard UI implementations are trying to manage the service by applying configurations and creating network rules.
 This implementation only generates configuration and its up to you to create network rules and apply configuration to WireGuard.
-For example by monitoring generated directory with [inotifywait](https://github.com/inotify-tools/inotify-tools/wiki). 
+For example by monitoring generated directory with [inotifywait](https://github.com/inotify-tools/inotify-tools/wiki).
 
 The goal is to run Wg Gen Web in a container and WireGuard on host system.
 
@@ -84,7 +84,7 @@ If needed, please make sure to backup your files from ```/etc/wireguard```.
 
 A workaround would be to change the ```WG_INTERFACE_NAME``` to something different, as it will create a new interface (```wg-auto.conf``` for example), note that if you do so, you will have to adapt your daemon accordingly.
 
-To get the value for **<API_LISTEN_IP>** take a look at the [WireGuard Status Display](#wireguard-status-display) section. If the status display should be disabled, remove the whole service from the docker-compose file or 
+To get the value for **<API_LISTEN_IP>** take a look at the [WireGuard Status Display](#wireguard-status-display) section. If the status display should be disabled, remove the whole service from the docker-compose file or
 use 127.0.0.1 as <API_LISTEN_IP>.
 
 ### Directly without docker
@@ -124,7 +124,7 @@ ExecStart=/usr/bin/systemctl restart wg-quick@wg0.service
 [Install]
 WantedBy=multi-user.target
 ```
-Which will restart WireGuard service 
+Which will restart WireGuard service
 
 ### Using ```inotifywait```
 For any other init system, create a daemon running this script
@@ -182,10 +182,11 @@ Add the environment variable:
 
 ```
 OAUTH2_PROVIDER_NAME=oauth2oidc
-OAUTH2_PROVIDER=https://gitlab.com
+OAUTH2_PROVIDER=https://accounts.google.com
 OAUTH2_CLIENT_ID=********************
 OAUTH2_CLIENT_SECRET=********************
 OAUTH2_REDIRECT_URL=https://wg-gen-web-demo.127-0-0-1.fr
+OAUTH2_HOSTED_DOMAIN=mycompany.com  # can be used to restrict authentication to google hosted domain
 ```
 
 Wg Gen Web will only access your profile to get email address and your name, no other unnecessary scopes will be requested.
